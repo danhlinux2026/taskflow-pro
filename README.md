@@ -1,4 +1,4 @@
-# 🖥️ MÁY TÍNH MŨI NÉ — TaskFlow Pro
+# 🖥️ MÁY TÍNH MŨI NÉ — QUẢN LÝ BÀN GIAO CÔNG VIỆC
 
 Hệ thống Điều hành & Quản lý Công việc (PWA) cho đội ngũ Máy Tính Mũi Né — giao việc, theo dõi tiến độ, chấm công, báo cáo tuần và nhắc nhở thời tiết, đồng bộ realtime qua Firebase Firestore.
 
