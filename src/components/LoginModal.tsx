@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, ShieldCheck, UserCheck, Key, LogIn, Lock, ArrowRight, UserPlus } from 'lucide-react';
 import { Employee, UserAccount } from '../types';
+import { InstallPWAButton } from './InstallPWAButton';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -100,6 +101,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               </span>
             </div>
           </div>
+
+          {/* Install App Prompt */}
+          <InstallPWAButton />
 
           {/* Manual Login Form */}
           <form onSubmit={handleManualLogin} className="space-y-3 border-b border-slate-200 pb-4">

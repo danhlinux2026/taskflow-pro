@@ -9,6 +9,7 @@ import {
   Briefcase,
 } from 'lucide-react';
 import { Employee, UserAccount } from '../types';
+import { InstallPWAButton } from './InstallPWAButton';
 
 interface LoginPageProps {
   accounts: UserAccount[];
@@ -145,6 +146,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 <span>Đăng nhập hệ thống</span>
               </button>
             </form>
+
+            {/* Install App PWA prompt */}
+            <InstallPWAButton dark />
           </div>
         </div>
       </main>

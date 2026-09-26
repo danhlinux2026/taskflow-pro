@@ -11,6 +11,7 @@ interface AccountManagementModalProps {
   onUpdateAccount: (acc: UserAccount) => void;
   onUpdateEmployeeAndAccount?: (emp: Employee, acc: UserAccount) => void;
   onDeleteAccount: (accountId: string) => void;
+  onDeleteEmployee?: (employee: Employee) => void;
 }
 
 export const AccountManagementModal: React.FC<AccountManagementModalProps> = ({
@@ -22,6 +23,7 @@ export const AccountManagementModal: React.FC<AccountManagementModalProps> = ({
   onUpdateAccount,
   onUpdateEmployeeAndAccount,
   onDeleteAccount,
+  onDeleteEmployee,
 }) => {
   const [empName, setEmpName] = useState('');
   const [department, setDepartment] = useState('Kỹ thuật');
@@ -34,6 +36,7 @@ export const AccountManagementModal: React.FC<AccountManagementModalProps> = ({
 
   // EDITING EMPLOYEE & ACCOUNT STATE
   const [deletingAccountTarget, setDeletingAccountTarget] = useState<UserAccount | null>(null);
+  const [deletingEmpTarget, setDeletingEmpTarget] = useState<Employee | null>(null);
   const [editingTarget, setEditingTarget] = useState<{
     emp: Employee;
     acc?: UserAccount;
@@ -448,19 +451,44 @@ export const AccountManagementModal: React.FC<AccountManagementModalProps> = ({
                               type="button"
                               onClick={() => setDeletingAccountTarget(acc)}
                               className="text-slate-400 hover:text-red-600 hover:bg-red-50 p-1 rounded transition-colors"
-                              title="Xóa / Thu hồi tài khoản"
+                              title="Thu hồi tài khoản (giữ nhân sự)"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                             </button>
+
+                            {onDeleteEmployee && (
+                              <button
+                                type="button"
+                                onClick={() => setDeletingEmpTarget(emp)}
+                                className="inline-flex items-center gap-1 rounded border border-red-200 bg-red-50 px-2 py-1 text-[11px] font-medium text-red-600 hover:bg-red-600 hover:text-white transition-colors"
+                                title="Xóa nhân sự & tài khoản"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                                <span>Xóa nhân sự</span>
+                              </button>
+                            )}
                           </>
                         ) : (
-                          <button
-                            type="button"
-                            onClick={() => handleCreateForExistingEmp(emp)}
-                            className="rounded bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-blue-700"
-                          >
-                            + Cấp tài khoản
-                          </button>
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => handleCreateForExistingEmp(emp)}
+                              className="rounded bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-blue-700"
+                            >
+                              + Cấp tài khoản
+                            </button>
+                            {onDeleteEmployee && (
+                              <button
+                                type="button"
+                                onClick={() => setDeletingEmpTarget(emp)}
+                                className="inline-flex items-center gap-1 rounded border border-red-200 bg-red-50 px-2 py-1 text-[11px] font-medium text-red-600 hover:bg-red-600 hover:text-white transition-colors"
+                                title="Xóa nhân sự"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                                <span>Xóa</span>
+                              </button>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>
@@ -619,6 +647,52 @@ export const AccountManagementModal: React.FC<AccountManagementModalProps> = ({
                   onDeleteAccount(deletingAccountTarget.id);
                   setMsg(`Đã xóa tài khoản của ${deletingAccountTarget.name}`);
                   setDeletingAccountTarget(null);
+                  setTimeout(() => setMsg(''), 4000);
+                }}
+                className="px-4 py-1.5 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                <span>Xác nhận xóa</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* CONFIRMATION DELETE EMPLOYEE MODAL */}
+      {deletingEmpTarget && (
+        <div className="fixed inset-0 z-70 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="p-5 text-center space-y-3">
+              <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto">
+                <AlertTriangle className="h-6 w-6" />
+              </div>
+              <h3 className="text-sm font-bold text-slate-900">
+                Xác nhận xóa nhân sự?
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Bạn có chắc chắn muốn xóa nhân sự{' '}
+                <strong className="text-slate-900">{deletingEmpTarget.name}</strong>{' '}
+                (<span className="font-mono font-semibold">{deletingEmpTarget.code}</span>)?
+                Tài khoản đăng nhập liên kết (nếu có) cũng sẽ bị thu hồi cùng lúc.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 px-4 py-3 bg-slate-50 border-t border-slate-200">
+              <button
+                type="button"
+                onClick={() => setDeletingEmpTarget(null)}
+                className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (onDeleteEmployee) {
+                    onDeleteEmployee(deletingEmpTarget);
+                  }
+                  setMsg(`Đã xóa nhân sự ${deletingEmpTarget.name}`);
+                  setDeletingEmpTarget(null);
                   setTimeout(() => setMsg(''), 4000);
                 }}
                 className="px-4 py-1.5 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"

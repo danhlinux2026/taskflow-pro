@@ -31,6 +31,8 @@ import {
   CloudLightning,
   Umbrella,
   Megaphone,
+  Pencil,
+  Trash2,
 } from 'lucide-react';
 import {
   Employee,
@@ -523,6 +525,17 @@ export default function App() {
     showToast('Đã thu hồi tài khoản.');
   };
 
+  const handleDeleteEmployee = (emp: Employee) => {
+    const linkedAcc = userAccounts.find(
+      (a) => a.employeeId === emp.id && a.role === 'employee'
+    );
+    if (linkedAcc) {
+      deleteUserAccountFromFirestore(linkedAcc.id);
+    }
+    deleteEmployeeFromFirestore(emp.id);
+    showToast(`Đã xóa nhân sự ${emp.name}${linkedAcc ? ' và tài khoản ' + linkedAcc.username : ''}.`);
+  };
+
   const handleResetDemoData = async () => {
     await clearFirestoreCollections(DEFAULT_ADMIN_ACCOUNT);
     setCurrentUser(DEFAULT_ADMIN_ACCOUNT);
@@ -983,7 +996,8 @@ export default function App() {
                         <th className="py-2.5 px-4 w-28">Giá dịch vụ</th>
                         <th className="py-2.5 px-4 w-28">Ngày nhận</th>
                         <th className="py-2.5 px-4 w-32">Trạng thái</th>
-                        <th className="py-2.5 px-4 w-32 text-right">Tiến độ</th>
+                        <th className="py-2.5 px-4 w-24 text-right">Tiến độ</th>
+                        <th className="py-2.5 px-4 w-28 text-center">Hành động</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -1077,6 +1091,43 @@ export default function App() {
                             <td className="py-3 px-4 text-right font-mono-tabular font-bold text-emerald-800">
                               {task.progress}%
                             </td>
+                            <td className="py-3 px-4">
+                              <div className="flex items-center justify-center gap-1">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleOpenTaskModal(task);
+                                  }}
+                                  className="inline-flex items-center justify-center h-7 w-7 rounded-md border border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-colors"
+                                  title="Sửa công việc"
+                                >
+                                  <Pencil className="h-3.5 w-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={isEmployeeRole}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (isEmployeeRole) {
+                                      showToast('🔒 Chỉ Admin mới có quyền xóa công việc.');
+                                      return;
+                                    }
+                                    if (confirm(`Xác nhận xóa công việc [${task.code}] "${task.title}"?`)) {
+                                      handleDeleteTask(task.id);
+                                    }
+                                  }}
+                                  className={`inline-flex items-center justify-center h-7 w-7 rounded-md border transition-colors ${
+                                    isEmployeeRole
+                                      ? 'border-slate-200 bg-slate-100 text-slate-300 cursor-not-allowed'
+                                      : 'border-red-200 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white hover:border-red-600'
+                                  }`}
+                                  title={isEmployeeRole ? 'Chỉ Admin mới được xóa' : 'Xóa công việc'}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                            </td>
                           </tr>
                         );
                       })}
@@ -1151,6 +1202,35 @@ export default function App() {
                                   {emp ? emp.name : <strong className="text-amber-700 font-normal">⚠️ Chưa giao</strong>}
                                 </span>
                                 <span className="font-mono-tabular">{formatViDate(t.dueDate)}</span>
+                              </div>
+                              <div className="flex items-center justify-end gap-1 pt-1">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleOpenTaskModal(t);
+                                  }}
+                                  className="inline-flex items-center justify-center h-6 w-6 rounded-md border border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors"
+                                  title="Sửa"
+                                >
+                                  <Pencil className="h-3 w-3" />
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={isEmployeeRole}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (isEmployeeRole) {
+                                      showToast('🔒 Chỉ Admin mới có quyền xóa công việc.');
+                                      return;
+                                    }
+                                    if (confirm(`Xóa [${t.code}] "${t.title}"?`)) handleDeleteTask(t.id);
+                                  }}
+                                  className={`inline-flex items-center justify-center h-6 w-6 rounded-md border transition-colors ${isEmployeeRole ? 'border-slate-200 bg-slate-100 text-slate-300 cursor-not-allowed' : 'border-red-200 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white'}`}
+                                  title={isEmployeeRole ? 'Chỉ Admin mới được xóa' : 'Xóa'}
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </button>
                               </div>
                             </div>
                           );
@@ -1276,6 +1356,7 @@ export default function App() {
         onUpdateAccount={handleUpdateAccount}
         onUpdateEmployeeAndAccount={handleUpdateEmployeeAndAccount}
         onDeleteAccount={handleDeleteAccount}
+        onDeleteEmployee={handleDeleteEmployee}
       />
 
       {/* Admin Completion Notification Popover */}
