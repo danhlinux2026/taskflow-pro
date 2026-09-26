@@ -19,39 +19,6 @@ Hệ thống Điều hành & Quản lý Công việc (PWA) cho đội ngũ Máy 
 | ☁️ **Realtime (Firestore)** | Mọi thay đổi đồng bộ tức thời giữa các thiết bị; 6 collection: `tasks`, `employees`, `userAccounts`, `weeklyReports`, `notifications`, `activityLogs`. |
 | ⬇️ **Xuất CSV** | Xuất tổng kết tuần (weekly summary CSV) để làm báo cáo. |
 
----
-
-## 🚀 Chạy dự án
-
-**Yêu cầu:** Node.js 18+, npm.
-
-```bash
-# 1. Cài đặt
-npm install
-
-# 2. (Tùy chọn) Tạo file .env.local nếu cần GEMINI_API_KEY
-cp .env.example .env.local
-
-# 3. Chạy dev server (port 5173)
-npm run dev
-
-# 4. Build + chạy production
-npm run build
-npm run start        # = vite preview trên $PORT
-```
-
-### Đăng nhập mặc định
-| Vai trò | Username | Password |
-|---|---|---|
-| Admin | `admin` | `123` |
-
-> ⚠️ Đây là tài khoản mẫu — nên tạo tài khoản mới trong *Quản lý tài khoản* và đổi mật khẩu trước khi dùng thật.
-
-### Cấu hình Firebase
-Cấu hình nằm trong [firebase-applet-config.json](firebase-applet-config.json), quy tắc trong [firestore.rules](firestore.rules). App tự khởi động Firebase ở [src/firebase.ts](src/firebase.ts) và kết nối `test/connection` khi tải.
-
----
-
 ## 🧭 Hướng dẫn sử dụng
 
 ### 1. Đăng nhập & Chọn tuần
