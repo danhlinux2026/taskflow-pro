@@ -1,0 +1,139 @@
+{
+  "entities": {
+    "Task": {
+      "title": "Task",
+      "description": "Task items assigned to employees",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "code": { "type": "string" },
+        "title": { "type": "string", "maxLength": 500 },
+        "description": { "type": "string", "maxLength": 5000 },
+        "assigneeId": { "type": "string" },
+        "project": { "type": "string", "maxLength": 100 },
+        "weekId": { "type": "string" },
+        "dueDate": { "type": "string" },
+        "status": { "type": "string", "enum": ["todo", "in_progress", "blocked", "completed"] },
+        "priority": { "type": "string", "enum": ["high", "medium", "low"] },
+        "progress": { "type": "number" },
+        "estimatedHours": { "type": "number" },
+        "loggedHours": { "type": "number" },
+        "price": { "type": "number" },
+        "address": { "type": "string", "maxLength": 1000 },
+        "lat": { "type": "number" },
+        "lng": { "type": "number" },
+        "blockerNote": { "type": "string", "maxLength": 2000 },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "title", "status"]
+    },
+    "Employee": {
+      "title": "Employee",
+      "description": "Team members in the organization",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "code": { "type": "string" },
+        "name": { "type": "string", "maxLength": 100 },
+        "role": { "type": "string", "maxLength": 100 },
+        "department": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "maxLength": 200 },
+        "initials": { "type": "string", "maxLength": 10 },
+        "weeklyCapacityHours": { "type": "number" }
+      },
+      "required": ["id", "name", "department"]
+    },
+    "UserAccount": {
+      "title": "UserAccount",
+      "description": "Authentication credentials and role profile",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "username": { "type": "string", "maxLength": 100 },
+        "password": { "type": "string", "maxLength": 100 },
+        "role": { "type": "string", "enum": ["admin", "employee"] },
+        "employeeId": { "type": "string" },
+        "name": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "maxLength": 200 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "username", "password", "role"]
+    },
+    "WeeklyReport": {
+      "title": "WeeklyReport",
+      "description": "Weekly status reports by employees",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "weekId": { "type": "string" },
+        "employeeId": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "submitted", "approved", "needs_revision"] },
+        "submittedAt": { "type": "string" },
+        "achievements": { "type": "string", "maxLength": 5000 },
+        "blockers": { "type": "string", "maxLength": 5000 },
+        "nextWeekPlan": { "type": "string", "maxLength": 5000 },
+        "managerFeedback": { "type": "string", "maxLength": 5000 }
+      },
+      "required": ["id", "weekId", "employeeId", "status"]
+    },
+    "AppNotification": {
+      "title": "AppNotification",
+      "description": "Notifications sent to admin when tasks are completed",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string", "maxLength": 500 },
+        "message": { "type": "string", "maxLength": 2000 },
+        "taskId": { "type": "string" },
+        "taskCode": { "type": "string" },
+        "taskTitle": { "type": "string" },
+        "completedByEmployeeName": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "read": { "type": "boolean" }
+      },
+      "required": ["id", "title", "message", "taskId", "read"]
+    },
+    "TaskActivityLog": {
+      "title": "TaskActivityLog",
+      "description": "History log of task creations, updates, and deletions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "actionType": { "type": "string", "enum": ["create", "update", "delete", "status_change", "progress_change"] },
+        "taskId": { "type": "string" },
+        "taskCode": { "type": "string" },
+        "taskTitle": { "type": "string" },
+        "performedBy": { "type": "string" },
+        "details": { "type": "string", "maxLength": 2000 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "actionType", "taskCode", "performedBy", "createdAt"]
+    }
+  },
+  "firestore": {
+    "tasks/{taskId}": {
+      "schema": { "$ref": "#/entities/Task" },
+      "description": "Collection of tasks"
+    },
+    "employees/{employeeId}": {
+      "schema": { "$ref": "#/entities/Employee" },
+      "description": "Collection of employees"
+    },
+    "userAccounts/{accountId}": {
+      "schema": { "$ref": "#/entities/UserAccount" },
+      "description": "Collection of user accounts"
+    },
+    "weeklyReports/{reportId}": {
+      "schema": { "$ref": "#/entities/WeeklyReport" },
+      "description": "Collection of weekly reports"
+    },
+    "notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/AppNotification" },
+      "description": "Collection of admin notifications"
+    },
+    "activityLogs/{logId}": {
+      "schema": { "$ref": "#/entities/TaskActivityLog" },
+      "description": "Collection of activity logs"
+    }
+  }
+}
